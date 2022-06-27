@@ -1,4 +1,4 @@
-const { Command } = require('../..');
+const { Command } = require('../../src');
 const util = require('util');
 
 class EvalCommand extends Command {

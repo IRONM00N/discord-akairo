@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../..');
+const { Command } = require('../../src');
 
 class QCommand extends Command {
     constructor() {

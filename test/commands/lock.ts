@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../..');
+const { Command } = require('../../src');
 const sleep = require('util').promisify(setTimeout);
 
 class LockCommand extends Command {

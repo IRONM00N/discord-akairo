@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const { Command, Flag } = require('../..');
+const { Command, Flag } = require('../../src');
 const util = require('util');
 
 class FCommand extends Command {

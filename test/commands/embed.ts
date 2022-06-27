@@ -1,4 +1,4 @@
-const { Command } = require('../..');
+const { Command } = require('../../src');
 
 class EmbedCommand extends Command {
     constructor() {
