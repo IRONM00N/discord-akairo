@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 
-const { Argument: { compose, range, union }, Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Argument, Command } from '../../src';
+const { compose, range, union } = Argument;
 
-class TestCommand extends Command {
+export default class TestCommand extends Command {
     constructor() {
         super('test', {
             aliases: ['test', 'test-a'],
@@ -24,4 +25,3 @@ class TestCommand extends Command {
     }
 }
 
-module.exports = TestCommand;

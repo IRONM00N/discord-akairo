@@ -1,38 +1,50 @@
-const Provider = require('./Provider');
+import Provider, { ProviderOptions } from './Provider';
+// @ts-ignore
+import type { Database, ISqlite } from 'sqlite';
+// @ts-ignore
+import type { Statement } from 'sqlite3';
 
 /**
  * Provider using the `sqlite` library.
- * @param {Database|Promise<Database>} db - SQLite database from `sqlite`.
- * @param {string} tableName - Name of table to handle.
- * @param {ProviderOptions} [options={}] - Options to use.
  * @extends {Provider}
  */
-class SQLiteProvider extends Provider {
-    constructor(db, tableName, { idColumn = 'id', dataColumn } = {}) {
+export default class SQLiteProvider extends Provider {
+    /**
+     * SQLite database.
+     * @type {Database}
+     */
+    public db: Database;
+
+    /**
+     * Name of the table.
+     * @type {string}
+     */
+    public tableName: string;
+
+    /**
+     * Column for ID.
+     * @type {string}
+     */
+    public idColumn: string;
+
+    /**
+     * Column for JSON data.
+     * @type {?string}
+     */
+    public dataColumn?: string
+
+    /**
+     * @param {Database|Promise<Database>} db - SQLite database from `sqlite`.
+     * @param {string} tableName - Name of table to handle.
+     * @param {ProviderOptions} [options={}] - Options to use.
+     */
+    constructor(db: Promise<Database>|Database, tableName: string, options: ProviderOptions = {}) {
+        const { idColumn = 'id', dataColumn } = options;
         super();
 
-        /**
-         * SQLite database.
-         * @type {Database}
-         */
-        this.db = db;
-
-        /**
-         * Name of the table.
-         * @type {string}
-         */
+        this.db = <Database>db; // awaited in init()
         this.tableName = tableName;
-
-        /**
-         * Column for ID.
-         * @type {string}
-         */
         this.idColumn = idColumn;
-
-        /**
-         * Column for JSON data.
-         * @type {?string}
-         */
         this.dataColumn = dataColumn;
     }
 
@@ -40,7 +52,7 @@ class SQLiteProvider extends Provider {
      * Initializes the provider.
      * @returns {Promise<void>}
      */
-    async init() {
+    public async init(): Promise<void> {
         const db = await this.db;
         this.db = db;
 
@@ -57,7 +69,7 @@ class SQLiteProvider extends Provider {
      * @param {any} [defaultValue] - Default value if not found or null.
      * @returns {any}
      */
-    get(id, key, defaultValue) {
+    public get(id: string, key: string, defaultValue: any): any {
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
             return value == null ? defaultValue : value;
@@ -73,7 +85,7 @@ class SQLiteProvider extends Provider {
      * @param {any} value - The value.
      * @returns {Promise<Statement>}
      */
-    set(id, key, value) {
+    public set(id: string, key: string, value: any): Promise<ISqlite.RunResult<Statement>> {
         const data = this.items.get(id) || {};
         const exists = this.items.has(id);
 
@@ -103,7 +115,7 @@ class SQLiteProvider extends Provider {
      * @param {string} key - The key to delete.
      * @returns {Promise<Statement>}
      */
-    delete(id, key) {
+    public delete(id: string, key: string): Promise<ISqlite.RunResult<Statement>> {
         const data = this.items.get(id) || {};
         delete data[key];
 
@@ -125,10 +137,8 @@ class SQLiteProvider extends Provider {
      * @param {string} id - ID of entry.
      * @returns {Promise<Statement>}
      */
-    clear(id) {
+    public clear(id: string): Promise<ISqlite.RunResult<Statement>> {
         this.items.delete(id);
         return this.db.run(`DELETE FROM ${this.tableName} WHERE ${this.idColumn} = $id`, { $id: id });
     }
 }
-
-module.exports = SQLiteProvider;

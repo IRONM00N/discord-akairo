@@ -1,14 +1,14 @@
-const AkairoError = require('../../../util/AkairoError');
-const Argument = require('./Argument');
-const { ArgumentMatches } = require('../../../util/Constants');
-const Flag = require('../Flag');
+import AkairoError from '../../../util/AkairoError';
+import Argument from './Argument';
+import { ArgumentMatches } from '../../../util/Constants';
+import Flag from '../Flag';
 
 /**
  * Runs arguments.
  * @param {Command} command - Command to run for.
  * @private
  */
-class ArgumentRunner {
+export default class ArgumentRunner {
     constructor(command) {
         this.command = command;
     }
@@ -364,8 +364,6 @@ class ArgumentRunner {
         };
     }
 }
-
-module.exports = ArgumentRunner;
 
 /**
  * State for the argument runner.

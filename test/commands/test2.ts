@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-const { Argument: { compose, range, union }, Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Argument, Command } from '../../src';
+const { compose, range, union } = Argument;
 
 class Test2Command extends Command {
     constructor() {

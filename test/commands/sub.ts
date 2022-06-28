@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class SubCommand extends Command {
+export default class SubCommand extends Command {
     constructor() {
         super('sub', {
             args: [
@@ -18,5 +18,3 @@ class SubCommand extends Command {
         message.channel.send(util.inspect(args, { depth: 1 }), { code: 'js' });
     }
 }
-
-module.exports = SubCommand;

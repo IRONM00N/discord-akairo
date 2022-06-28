@@ -1,7 +1,7 @@
-const { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, SQLiteProvider } = require('../../src/index');
-const sqlite = require('sqlite');
+import * as sqlite from 'sqlite';
+import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, SQLiteProvider } from '../../src/index';
 
-class TestClient extends AkairoClient {
+export default class TestClient extends AkairoClient {
     constructor() {
         super({
             ownerID: '123992700587343872'
@@ -77,5 +77,3 @@ class TestClient extends AkairoClient {
         console.log('Ready!'); // eslint-disable-line no-console
     }
 }
-
-module.exports = TestClient;

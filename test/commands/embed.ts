@@ -1,6 +1,6 @@
-const { Command } = require('../../src');
+import { Command } from '../../src';
 
-class EmbedCommand extends Command {
+export default class EmbedCommand extends Command {
     constructor() {
         super('embed', {
             aliases: ['embed'],
@@ -35,5 +35,3 @@ class EmbedCommand extends Command {
         return message.util.send(args.phrase, { embed: { description: args.phrase } });
     }
 }
-
-module.exports = EmbedCommand;

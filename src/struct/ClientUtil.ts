@@ -1,15 +1,20 @@
-const { Collection, MessageAttachment, MessageEmbed, Permissions } = require('discord.js');
+import { Collection, MessageAttachment, MessageEmbed, Permissions } from 'discord.js';
+import AkairoClient from './AkairoClient';
 
 /**
  * Client utilities to help with common tasks.
- * @param {AkairoClient} client - The client.
  */
-class ClientUtil {
-    constructor(client) {
-        /**
-         * The Akairo client.
-         * @type {AkairoClient}
-         */
+export default class ClientUtil {
+    /**
+     * The Akairo client.
+     * @type {AkairoClient}
+     */
+    public client: AkairoClient;
+
+    /**
+     * @param {AkairoClient} client - The client.
+     */
+    public constructor(client: AkairoClient) {
         this.client = client;
     }
 
@@ -21,7 +26,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {User}
      */
-    resolveUser(text, users, caseSensitive = false, wholeWord = false) {
+    public resolveUser(text, users, caseSensitive = false, wholeWord = false) {
         return users.get(text) || users.find(user => this.checkUser(text, user, caseSensitive, wholeWord));
     }
 
@@ -33,7 +38,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, User>}
      */
-    resolveUsers(text, users, caseSensitive = false, wholeWord = false) {
+    public resolveUsers(text, users, caseSensitive = false, wholeWord = false) {
         return users.filter(user => this.checkUser(text, user, caseSensitive, wholeWord));
     }
 
@@ -45,7 +50,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkUser(text, user, caseSensitive = false, wholeWord = false) {
+    public checkUser(text, user, caseSensitive = false, wholeWord = false) {
         if (user.id === text) return true;
 
         const reg = /<@!?(\d{17,19})>/;
@@ -74,7 +79,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {GuildMember}
      */
-    resolveMember(text, members, caseSensitive = false, wholeWord = false) {
+    public resolveMember(text, members, caseSensitive = false, wholeWord = false) {
         return members.get(text) || members.find(member => this.checkMember(text, member, caseSensitive, wholeWord));
     }
 
@@ -86,7 +91,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, GuildMember>}
      */
-    resolveMembers(text, members, caseSensitive = false, wholeWord = false) {
+    public resolveMembers(text, members, caseSensitive = false, wholeWord = false) {
         return members.filter(member => this.checkMember(text, member, caseSensitive, wholeWord));
     }
 
@@ -98,7 +103,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkMember(text, member, caseSensitive = false, wholeWord = false) {
+    public checkMember(text, member, caseSensitive = false, wholeWord = false) {
         if (member.id === text) return true;
 
         const reg = /<@!?(\d{17,19})>/;
@@ -130,7 +135,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Channel}
      */
-    resolveChannel(text, channels, caseSensitive = false, wholeWord = false) {
+    public resolveChannel(text, channels, caseSensitive = false, wholeWord = false) {
         return channels.get(text) || channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord));
     }
 
@@ -142,7 +147,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, Channel>}
      */
-    resolveChannels(text, channels, caseSensitive = false, wholeWord = false) {
+    public resolveChannels(text, channels, caseSensitive = false, wholeWord = false) {
         return channels.filter(channel => this.checkChannel(text, channel, caseSensitive, wholeWord));
     }
 
@@ -154,7 +159,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkChannel(text, channel, caseSensitive = false, wholeWord = false) {
+    public checkChannel(text, channel, caseSensitive = false, wholeWord = false) {
         if (channel.id === text) return true;
 
         const reg = /<#(\d{17,19})>/;
@@ -182,7 +187,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Role}
      */
-    resolveRole(text, roles, caseSensitive = false, wholeWord = false) {
+    public resolveRole(text, roles, caseSensitive = false, wholeWord = false) {
         return roles.get(text) || roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord));
     }
 
@@ -194,7 +199,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, Role>}
      */
-    resolveRoles(text, roles, caseSensitive = false, wholeWord = false) {
+    public resolveRoles(text, roles, caseSensitive = false, wholeWord = false) {
         return roles.filter(role => this.checkRole(text, role, caseSensitive, wholeWord));
     }
 
@@ -206,7 +211,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkRole(text, role, caseSensitive = false, wholeWord = false) {
+    public checkRole(text, role, caseSensitive = false, wholeWord = false) {
         if (role.id === text) return true;
 
         const reg = /<@&(\d{17,19})>/;
@@ -234,7 +239,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Emoji}
      */
-    resolveEmoji(text, emojis, caseSensitive = false, wholeWord = false) {
+    public resolveEmoji(text, emojis, caseSensitive = false, wholeWord = false) {
         return emojis.get(text) || emojis.find(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord));
     }
 
@@ -246,7 +251,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, Emoji>}
      */
-    resolveEmojis(text, emojis, caseSensitive = false, wholeWord = false) {
+    public resolveEmojis(text, emojis, caseSensitive = false, wholeWord = false) {
         return emojis.filter(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord));
     }
 
@@ -258,7 +263,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkEmoji(text, emoji, caseSensitive = false, wholeWord = false) {
+    public checkEmoji(text, emoji, caseSensitive = false, wholeWord = false) {
         if (emoji.id === text) return true;
 
         const reg = /<a?:[a-zA-Z0-9_]+:(\d{17,19})>/;
@@ -286,7 +291,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Guild}
      */
-    resolveGuild(text, guilds, caseSensitive = false, wholeWord = false) {
+    public resolveGuild(text, guilds, caseSensitive = false, wholeWord = false) {
         return guilds.get(text) || guilds.find(guild => this.checkGuild(text, guild, caseSensitive, wholeWord));
     }
 
@@ -298,7 +303,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes finding by name match full word only.
      * @returns {Collection<Snowflake, Guild>}
      */
-    resolveGuilds(text, guilds, caseSensitive = false, wholeWord = false) {
+    public resolveGuilds(text, guilds, caseSensitive = false, wholeWord = false) {
         return guilds.filter(guild => this.checkGuild(text, guild, caseSensitive, wholeWord));
     }
 
@@ -310,7 +315,7 @@ class ClientUtil {
      * @param {boolean} [wholeWord=false] - Makes checking by name match full word only.
      * @returns {boolean}
      */
-    checkGuild(text, guild, caseSensitive = false, wholeWord = false) {
+    public checkGuild(text, guild, caseSensitive = false, wholeWord = false) {
         if (guild.id === text) return true;
 
         text = caseSensitive ? text : text.toLowerCase();
@@ -324,7 +329,7 @@ class ClientUtil {
      * Array of permission names.
      * @returns {string[]}
      */
-    permissionNames() {
+    public permissionNames() {
         return Object.keys(Permissions.FLAGS);
     }
 
@@ -333,7 +338,7 @@ class ClientUtil {
      * @param {number} number - The permissions number.
      * @returns {string[]}
      */
-    resolvePermissionNumber(number) {
+    public resolvePermissionNumber(number) {
         const resolved = [];
 
         for (const key of Object.keys(Permissions.FLAGS)) {
@@ -350,7 +355,7 @@ class ClientUtil {
      * @param {GuildMember} newMember - The new member.
      * @returns {number}
      */
-    compareStreaming(oldMember, newMember) {
+    public compareStreaming(oldMember, newMember) {
         const s1 = oldMember.presence?.activities.find(c => c.type === 'STREAMING');
         const s2 = newMember.presence?.activities.find(c => c.type === 'STREAMING');
         if (s1 === s2) return 0;
@@ -366,7 +371,7 @@ class ClientUtil {
      * @param {boolean} cache - Whether or not to add to cache.
      * @returns {Promise<GuildMember>}
      */
-    async fetchMember(guild, id, cache) {
+    public async fetchMember(guild, id, cache) {
         const user = await this.client.users.fetch(id, cache);
         return guild.members.fetch(user, cache);
     }
@@ -376,7 +381,7 @@ class ClientUtil {
      * @param {Object} [data] - Embed data.
      * @returns {MessageEmbed}
      */
-    embed(data) {
+    public embed(data) {
         return new MessageEmbed(data);
     }
 
@@ -386,7 +391,7 @@ class ClientUtil {
      * @param {string} [name] - The filename.
      * @returns {MessageAttachment}
      */
-    attachment(file, name) {
+    public attachment(file, name) {
         return new MessageAttachment(file, name);
     }
 
@@ -395,9 +400,7 @@ class ClientUtil {
      * @param {Iterable} [iterable] - Entries to fill with.
      * @returns {Collection}
      */
-    collection(iterable) {
+    public collection(iterable) {
         return new Collection(iterable);
     }
 }
-
-module.exports = ClientUtil;

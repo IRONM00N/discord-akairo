@@ -1,5 +1,5 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoModule = require('../AkairoModule');
+import AkairoError from '../../util/AkairoError';
+import AkairoModule from '../AkairoModule';
 
 /**
  * Represents a listener.
@@ -7,7 +7,7 @@ const AkairoModule = require('../AkairoModule');
  * @param {ListenerOptions} [options={}] - Options for the listener.
  * @extends {AkairoModule}
  */
-class Listener extends AkairoModule {
+export default class Listener extends AkairoModule {
     constructor(id, {
         category,
         emitter,
@@ -71,8 +71,6 @@ class Listener extends AkairoModule {
      * @returns {Listener}
      */
 }
-
-module.exports = Listener;
 
 /**
  * Options to use for listener execution behavior.

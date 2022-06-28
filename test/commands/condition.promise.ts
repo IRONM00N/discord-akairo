@@ -1,6 +1,6 @@
-const { Command } = require('../../src');
+import { Command } from '../../src';
 
-class ConditionalPromiseCommand extends Command {
+export default class ConditionalPromiseCommand extends Command {
     constructor() {
         super('condition.promise');
     }
@@ -13,5 +13,3 @@ class ConditionalPromiseCommand extends Command {
         return message.util.reply('made you promise condition');
     }
 }
-
-module.exports = ConditionalPromiseCommand;

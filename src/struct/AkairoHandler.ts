@@ -1,11 +1,11 @@
-const AkairoError = require('../util/AkairoError');
-const { AkairoHandlerEvents } = require('../util/Constants');
-const AkairoModule = require('./AkairoModule');
-const Category = require('../util/Category');
-const { Collection } = require('discord.js');
-const EventEmitter = require('events');
-const fs = require('fs');
-const path = require('path');
+import AkairoError from '../util/AkairoError';
+import { AkairoHandlerEvents } from '../util/Constants';
+import AkairoModule from './AkairoModule';
+import Category from '../util/Category';
+import { Collection } from 'discord.js';
+import EventEmitter from 'events';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * Base class for handling modules.
@@ -13,62 +13,73 @@ const path = require('path');
  * @param {AkairoHandlerOptions} options - Options for module loading and handling.
  * @extends {EventEmitter}
  */
-class AkairoHandler extends EventEmitter {
-    constructor(client, {
-        directory,
-        classToHandle = AkairoModule,
-        extensions = ['.js', '.json', '.ts'],
-        automateCategories = false,
-        loadFilter = (() => true)
-    }) {
+export default abstract class AkairoHandler extends EventEmitter {
+    /**
+     * The Akairo client.
+     * @type {AkairoClient}
+     */
+    public client: AkairoClient;
+
+    /**
+     * The main directory to modules.
+     * @type {string}
+     */
+    public directory: string;
+
+    /**
+     * Class to handle.
+     * @type {Function}
+     */
+    public classToHandle: Function;
+
+    /**
+     * File extensions to load.
+     * @type {Set<string>}
+     */
+    public extensions: Set<string>;
+
+    /**
+     * Whether or not to automate category names.
+     * @type {boolean}
+     */
+    public automateCategories: boolean;
+
+    /**
+     * Function that filters files when loading.
+     * @type {LoadPredicate}
+     */
+    public loadFilter: LoadPredicate;
+
+    /**
+     * Modules loaded, mapped by ID to AkairoModule.
+     * @type {Collection<string, AkairoModule>}
+     */
+    public modules: Collection<string, AkairoModule>;
+
+    /**
+     * Categories, mapped by ID to Category.
+     * @type {Collection<string, Category>}
+     */
+    public categories: Collection<string, Category<string, AkairoModule>>;
+
+    public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
+        const {
+            directory,
+            classToHandle = AkairoModule,
+            extensions = ['.js', '.json', '.ts'],
+            automateCategories = false,
+            loadFilter = (() => true)
+        } = options
+
         super();
 
-        /**
-         * The Akairo client.
-         * @type {AkairoClient}
-         */
         this.client = client;
-
-        /**
-         * The main directory to modules.
-         * @type {string}
-         */
         this.directory = directory;
-
-        /**
-         * Class to handle.
-         * @type {Function}
-         */
         this.classToHandle = classToHandle;
-
-        /**
-         * File extensions to load.
-         * @type {Set<string>}
-         */
         this.extensions = new Set(extensions);
-
-        /**
-         * Whether or not to automate category names.
-         * @type {boolean}
-         */
         this.automateCategories = Boolean(automateCategories);
-
-        /**
-         * Function that filters files when loading.
-         * @type {LoadPredicate}
-         */
         this.loadFilter = loadFilter;
-
-        /**
-         * Modules loaded, mapped by ID to AkairoModule.
-         * @type {Collection<string, AkairoModule>}
-         */
         this.modules = new Collection();
-
-        /**
-         * Categories, mapped by ID to Category.
-         * @type {Collection<string, Category>}
-         */
         this.categories = new Collection();
     }
 
@@ -78,7 +89,7 @@ class AkairoHandler extends EventEmitter {
      * @param {string} [filepath] - Filepath of module.
      * @returns {void}
      */
-    register(mod, filepath) {
+    public register(mod: AkairoModule, filepath?: string): void {
         mod.filepath = filepath;
         mod.client = this.client;
         mod.handler = this;
@@ -191,7 +202,7 @@ class AkairoHandler extends EventEmitter {
      * @param {string} id - ID of the module.
      * @returns {AkairoModule}
      */
-    reload(id) {
+    public reload(id: string): AkairoModule {
         const mod = this.modules.get(id.toString());
         if (!mod) throw new AkairoError('MODULE_NOT_FOUND', this.classToHandle.name, id);
         if (!mod.filepath) throw new AkairoError('NOT_RELOADABLE', this.classToHandle.name, id);
@@ -207,7 +218,7 @@ class AkairoHandler extends EventEmitter {
      * Reloads all modules.
      * @returns {AkairoHandler}
      */
-    reloadAll() {
+    public reloadAll(): this {
         for (const m of Array.from(this.modules.values())) {
             if (m.filepath) this.reload(m.id);
         }
@@ -220,7 +231,7 @@ class AkairoHandler extends EventEmitter {
      * @param {string} name - Name to find with.
      * @returns {Category}
      */
-    findCategory(name) {
+    public findCategory(name: string): Category<string, AkairoModule> {
         return this.categories.find(category => {
             return category.id.toLowerCase() === name.toLowerCase();
         });
@@ -231,8 +242,8 @@ class AkairoHandler extends EventEmitter {
      * @param {string} directory - Directory to read.
      * @returns {string[]}
      */
-    static readdirRecursive(directory) {
-        const result = [];
+    public static readdirRecursive(directory: string): string[] {
+        const result: string[] = [];
 
         (function read(dir) {
             const files = fs.readdirSync(dir);
@@ -251,8 +262,6 @@ class AkairoHandler extends EventEmitter {
         return result;
     }
 }
-
-module.exports = AkairoHandler;
 
 /**
  * Emitted when a module is loaded.

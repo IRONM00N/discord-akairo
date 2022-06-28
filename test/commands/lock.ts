@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const sleep = require('util').promisify(setTimeout);
+import { promisify } from 'util';
+import { Command } from '../../src';
+const sleep = promisify(setTimeout);
 
-class LockCommand extends Command {
+export default class LockCommand extends Command {
     constructor() {
         super('lock', {
             aliases: ['lock'],
@@ -15,5 +16,3 @@ class LockCommand extends Command {
         return [0, 1, 2, 3, 4].reduce((promise, num) => promise.then(() => sleep(1000)).then(() => message.util.send(num)), Promise.resolve());
     }
 }
-
-module.exports = LockCommand;

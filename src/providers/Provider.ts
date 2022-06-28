@@ -1,16 +1,18 @@
-const AkairoError = require('../util/AkairoError');
-const { Collection } = require('discord.js');
+import { Collection } from 'discord.js';
+import { patchAbstract } from '../util/Util';
 
 /**
  * A provider for key-value storage.
  * Must be implemented.
  */
-class Provider {
-    constructor() {
-        /**
-         * Cached entries.
-         * @type {Collection<string, Object>}
-         */
+export default abstract class Provider {
+    /**
+     * Cached entries.
+     * @type {Collection<string, Object>}
+     */
+    public items: Collection<string, any>;
+
+    public constructor() {
         this.items = new Collection();
     }
 
@@ -19,9 +21,7 @@ class Provider {
      * @abstract
      * @returns {any}
      */
-    init() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'init');
-    }
+    public abstract init(): any;
 
     /**
      * Gets a value.
@@ -31,9 +31,7 @@ class Provider {
      * @param {any} [defaultValue] - Default value if not found or null.
      * @returns {any}
      */
-    get() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'get');
-    }
+    public abstract get(id: string, key: string, defaultValue?: any): any;
 
     /**
      * Sets a value.
@@ -43,9 +41,7 @@ class Provider {
      * @param {any} value - The value.
      * @returns {any}
      */
-    set() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'set');
-    }
+    public abstract set(id: string, key: string, value: any): any;
 
     /**
      * Deletes a value.
@@ -54,9 +50,7 @@ class Provider {
      * @param {string} key - The key to delete.
      * @returns {any}
      */
-    delete() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'delete');
-    }
+    public abstract delete(id: string, key: string): any;
 
     /**
      * Clears an entry.
@@ -64,19 +58,30 @@ class Provider {
      * @param {string} id - ID of entry.
      * @returns {any}
      */
-    clear() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'clear');
-    }
+    public abstract clear(id: string): any;
 }
 
-module.exports = Provider;
+patchAbstract(Provider, 'init');
+patchAbstract(Provider, 'get');
+patchAbstract(Provider, 'set');
+patchAbstract(Provider, 'delete');
+patchAbstract(Provider, 'clear');
 
 /**
  * Options to use for providers.
- * @typedef {Object} ProviderOptions
- * @prop {string} [idColumn='id'] - Column for the unique key, defaults to 'id'.
- * @prop {string} [dataColumn] - Column for JSON data.
- * If not provided, the provider will use all columns of the table.
- * If provided, only one column will be used, but it will be more flexible due to being parsed as JSON.
- * For Sequelize, note that the model has to specify the type of the column as JSON or JSONB.
  */
+export interface ProviderOptions {
+    /**
+     * Column for the unique key, defaults to 'id'.
+     * @default 'id'
+     */
+    idColumn?: string
+
+    /**
+     * Column for JSON data.
+     * If not provided, the provider will use all columns of the table.
+     * If provided, only one column will be used, but it will be more flexible due to being parsed as JSON.
+     * For Sequelize, note that the model has to specify the type of the column as JSON or JSONB.
+     */
+    dataColumn?: string
+}

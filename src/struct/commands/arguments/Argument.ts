@@ -1,26 +1,30 @@
-const { ArgumentMatches, ArgumentTypes } = require('../../../util/Constants');
-const Flag = require('../Flag');
-const { choice, intoCallable, isPromise } = require('../../../util/Util');
+import { Message } from 'discord.js';
+import { ArgumentMatches, ArgumentTypes } from '../../../util/Constants';
+import { choice, intoCallable, isPromise } from '../../../util/Util';
+import { Command } from '../../Command';
+import Flag from '../Flag';
 
 /**
  * Represents an argument for a command.
  * @param {Command} command - Command of the argument.
  * @param {ArgumentOptions} options - Options for the argument.
  */
-class Argument {
-    constructor(command, {
-        match = ArgumentMatches.PHRASE,
-        type = ArgumentTypes.STRING,
-        flag = null,
-        multipleFlags = false,
-        index = null,
-        unordered = false,
-        limit = Infinity,
-        prompt = null,
-        default: defaultValue = null,
-        otherwise = null,
-        modifyOtherwise = null
-    } = {}) {
+export default class Argument {
+    public constructor(command: Command, options: ArgumentOptions = {}) {
+        const {
+            match = ArgumentMatches.PHRASE,
+            type = ArgumentTypes.STRING,
+            flag = null,
+            multipleFlags = false,
+            index = null,
+            unordered = false,
+            limit = Infinity,
+            prompt = null,
+            default: defaultValue = null,
+            otherwise = null,
+            modifyOtherwise = null
+        } = options;
+
         /**
          * The command this argument belongs to.
          * @type {Command}
@@ -116,7 +120,7 @@ class Argument {
      * @param {string} phrase - The phrase to process.
      * @returns {Promise<Flag|any>}
      */
-    async process(message, phrase) {
+    public async process(message, phrase) {
         const commandDefs = this.command.argumentDefaults;
         const handlerDefs = this.handler.argumentDefaults;
         const optional = choice(
@@ -190,7 +194,7 @@ class Argument {
      * @param {string} phrase - Phrase to process.
      * @returns {Promise<any>}
      */
-    cast(message, phrase) {
+    public cast(message: Message, phrase) {
         return Argument.cast(this.type, this.handler.resolver, message, phrase);
     }
 
@@ -604,8 +608,6 @@ class Argument {
         return value == null || Flag.is(value, 'fail');
     }
 }
-
-module.exports = Argument;
 
 /**
  * Options for how an argument parses text.

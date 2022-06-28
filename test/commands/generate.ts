@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command, Flag } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command, Flag } from '../../src';
 
-class GenerateCommand extends Command {
+export default class GenerateCommand extends Command {
     constructor() {
         super('generate', {
             aliases: ['generate', 'g']
@@ -27,5 +27,3 @@ class GenerateCommand extends Command {
         message.channel.send(util.inspect(args, { depth: 1 }), { code: 'js' });
     }
 }
-
-module.exports = GenerateCommand;

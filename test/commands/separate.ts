@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class SeparateCommand extends Command {
+export default class SeparateCommand extends Command {
     constructor() {
         super('separate', {
             aliases: ['separate', 'sep'],
@@ -25,5 +25,3 @@ class SeparateCommand extends Command {
         message.channel.send(util.inspect(args, { depth: 1 }), { code: 'js' });
     }
 }
-
-module.exports = SeparateCommand;

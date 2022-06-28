@@ -1,17 +1,89 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoModule = require('../AkairoModule');
-const Argument = require('./arguments/Argument');
-const ArgumentRunner = require('./arguments/ArgumentRunner');
-const ContentParser = require('./ContentParser');
+import type { Message, PermissionResolvable } from 'discord.js';
+import { patchAbstract } from '../../util/Util';
+import AkairoModule, { AkairoModuleOptions } from '../AkairoModule';
+import Argument from './arguments/Argument';
+import ArgumentRunner from './arguments/ArgumentRunner';
+import ContentParser from './ContentParser';
 
 /**
  * Represents a command.
- * @param {string} id - Command ID.
- * @param {CommandOptions} [options={}] - Options for the command.
  * @extends {AkairoModule}
  */
-class Command extends AkairoModule {
-    constructor(id, options = {}) {
+export default abstract class Command extends AkairoModule {
+    /**
+     * Command names.
+     * @type {string[]}
+     */
+    public aliases: string[];
+
+    /** @internal */
+    private contentParser: ContentParser;
+
+    /** @internal */
+    private argumentRunner: ArgumentRunner;
+
+    /** @internal */
+    private argumentGenerator: ArgumentGenerator;
+
+    /**
+     * Usable only in this channel type.
+     * @type {?string}
+     */
+    public channel: 'guild' | 'dm' | null;
+
+    /**
+     * Usable only by the client owner.
+     * @type {boolean}
+     */
+    public ownerOnly: boolean;
+
+    /**
+     * Whether or not this command can be ran by an edit.
+     * @type {boolean}
+     */
+    public editable: boolean;
+
+    /**
+     * Whether or not to type during command execution.
+     * @type {boolean}
+     */
+    public typing: boolean;
+
+    /**
+     * Cooldown in milliseconds.
+     * @type {?number}
+     */
+    public cooldown?: number;
+
+    /**
+     * Uses allowed before cooldown.
+     * @type {number}
+     */
+    public ratelimit: number;
+
+    /**
+     * Default prompt options.
+     * @type {DefaultArgumentOptions}
+     */
+    public argumentDefaults: DefaultArgumentOptions;
+
+    /**
+     * Description of the command.
+     * @type {string|any}
+     */
+    public description: string | any;
+
+    /**
+     * Command prefix overwrite.
+     * @type {?string|string[]|PrefixSupplier}
+     */
+    public prefix?: string | string[] | PrefixSupplier;
+
+    /**
+     * @param {string} id - Command ID.
+     * @param {CommandOptions} [options={}] - Options for the command.
+     */
+    public constructor(id: string, options: CommandOptions = {}) {
         super(id, { category: options.category });
 
         const {
@@ -40,10 +112,6 @@ class Command extends AkairoModule {
             optionFlags = []
         } = options;
 
-        /**
-         * Command names.
-         * @type {string[]}
-         */
         this.aliases = aliases;
 
         const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -62,58 +130,14 @@ class Command extends AkairoModule {
             ? ArgumentRunner.fromArguments(args.map(arg => [arg.id, new Argument(this, arg)]))
             : args.bind(this);
 
-        /**
-         * Usable only in this channel type.
-         * @type {?string}
-         */
         this.channel = channel;
-
-        /**
-         * Usable only by the client owner.
-         * @type {boolean}
-         */
         this.ownerOnly = Boolean(ownerOnly);
-
-        /**
-         * Whether or not this command can be ran by an edit.
-         * @type {boolean}
-         */
         this.editable = Boolean(editable);
-
-        /**
-         * Whether or not to type during command execution.
-         * @type {boolean}
-         */
         this.typing = Boolean(typing);
-
-        /**
-         * Cooldown in milliseconds.
-         * @type {?number}
-         */
         this.cooldown = cooldown;
-
-        /**
-         * Uses allowed before cooldown.
-         * @type {number}
-         */
         this.ratelimit = ratelimit;
-
-        /**
-         * Default prompt options.
-         * @type {DefaultArgumentOptions}
-         */
         this.argumentDefaults = argumentDefaults;
-
-        /**
-         * Description of the command.
-         * @type {string|any}
-         */
         this.description = Array.isArray(description) ? description.join('\n') : description;
-
-        /**
-         * Command prefix overwrite.
-         * @type {?string|string[]|PrefixSupplier}
-         */
         this.prefix = typeof prefix === 'function' ? prefix.bind(this) : prefix;
 
         /**
@@ -204,9 +228,7 @@ class Command extends AkairoModule {
      * @param {any} args - Evaluated arguments.
      * @returns {any}
      */
-    exec() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'exec');
-    }
+    public abstract exec(message: Message, args: any): any;
 
     /**
      * Parses content using the command's arguments.
@@ -214,52 +236,152 @@ class Command extends AkairoModule {
      * @param {string} content - String to parse.
      * @returns {Promise<Flag|any>}
      */
-    parse(message, content) {
+    public parse(message: Message, content: string): Promise<Flag | any> {
         const parsed = this.contentParser.parse(content);
         return this.argumentRunner.run(message, parsed, this.argumentGenerator);
     }
+}
 
+patchAbstract(Command, 'exec');
+
+export default interface Command {
+    before(message: Message): any;
+    condition(message: Message): boolean;
+    args(
+        message: Message, 
+        parsed: ContentParserResult, 
+        state: ArgumentRunnerState
+    ): Generator<
+	    ArgumentOptions | Argument | Flag,
+	    { [args: string]: any } | Flag,
+	    Flag | any
+    >;
+}
+
+export default interface Command {
     /**
      * Reloads the command.
-     * @method
-     * @name Command#reload
-     * @returns {Command}
      */
+    reload(): this;
 
     /**
      * Removes the command.
-     * @method
-     * @name Command#remove
-     * @returns {Command}
      */
+    remove(): this;
 }
 
-module.exports = Command;
-
-/**
+/** 
  * Options to use for command execution behavior.
  * Also includes properties from AkairoModuleOptions.
- * @typedef {AkairoModuleOptions} CommandOptions
- * @prop {string[]} [aliases=[]] - Command names.
- * @prop {ArgumentOptions[]|ArgumentGenerator} [args=[]] - Argument options or generator.
- * @prop {boolean} [quoted=true] - Whether or not to consider quotes.
- * @prop {string} [separator] - Custom separator for argument input.
- * @prop {string[]} [flags=[]] - Flags to use when using an ArgumentGenerator.
- * @prop {string[]} [optionFlags=[]] - Option flags to use when using an ArgumentGenerator.
- * @prop {string} [channel] - Restricts channel to either 'guild' or 'dm'.
- * @prop {boolean} [ownerOnly=false] - Whether or not to allow client owner(s) only.
- * @prop {boolean} [typing=false] - Whether or not to type in channel during execution.
- * @prop {boolean} [editable=true] - Whether or not message edits will run this command.
- * @prop {number} [cooldown] - The command cooldown in milliseconds.
- * @prop {number} [ratelimit=1] - Amount of command uses allowed until cooldown.
- * @prop {string|string[]|PrefixSupplier} [prefix] - The prefix(es) to overwrite the global one for this command.
- * @prop {PermissionResolvable|PermissionResolvable[]|MissingPermissionSupplier} [userPermissions] - Permissions required by the user to run this command.
- * @prop {PermissionResolvable|PermissionResolvable[]|MissingPermissionSupplier} [clientPermissions] - Permissions required by the client to run this command.
- * @prop {RegExp|RegexSupplier} [regex] - A regex to match in messages that are not directly commands.
- * The args object will have `match` and `matches` properties.
- * @prop {ExecutionPredicate} [condition] - Whether or not to run on messages that are not directly commands.
- * @prop {BeforeAction} [before] - Function to run before argument parsing and execution.
- * @prop {KeySupplier|string} [lock] - The key type or key generator for the locker. If lock is a string, it's expected one of 'guild', 'channel', or 'user'.
+ */
+export interface CommandOptions extends AkairoModuleOptions {
+    /**
+     * Command names.
+     * @default []
+     */
+    aliases?: string[];
+
+    /**
+     * Argument options or generator.
+     * @default []
+     */
+    args?: ArgumentOptions[] | ArgumentGenerator;
+
+    /**
+     * Whether or not to consider quotes.
+     * @default true
+     */
+    quoted?: boolean;
+
+    /**
+     * Custom separator for argument input.
+     */
+    separator?: string;
+
+    /**
+     * Flags to use when using an ArgumentGenerator.
+     * @default []
+     */
+    flags?: string[];
+
+    /**
+     * Option flags to use when using an ArgumentGenerator.
+     * @default []
+     */
+    optionFlags?: string[];
+
+    /**
+     * Restricts channel to either 'guild' or 'dm'.
+     */
+    channel?: 'guild' | 'dm';
+
+    /**
+     * Whether or not to allow client owner(s) only.
+     * @default false
+     */
+    ownerOnly?: boolean;
+
+    /**
+     * Whether or not to type in channel during execution.
+     * @default false
+     */
+    typing?: boolean;
+
+    /**
+     * Whether or not message edits will run this command.
+     * @default true
+     */
+    editable?: boolean;
+
+    /**
+     * The command cooldown in milliseconds.
+     */
+    cooldown?: number;
+
+    /**
+     * Amount of command uses allowed until cooldown.
+     * @default 1
+     */
+    ratelimit?: number;
+
+    /**
+     * The prefix(es) to overwrite the global one for this command.
+     */
+    prefix?: string | string[] | PrefixSupplier;
+
+    /**
+     * Permissions required by the user to run this command.
+     */
+    userPermissions?: PermissionResolvable|PermissionResolvable[]|MissingPermissionSupplier;
+
+    /**
+     * Permissions required by the client to run this command.
+     */
+    clientPermissions?: PermissionResolvable|PermissionResolvable[]|MissingPermissionSupplier;
+
+    /**
+     * A regex to match in messages that are not directly commands.
+     * The args object will have `match` and `matches` properties.
+     */
+    regex?: RegExp|RegexSupplier;
+
+    /**
+     * Whether or not to run on messages that are not directly commands.
+     */
+    condition?: ExecutionPredicate;
+
+    /**
+     * Function to run before argument parsing and execution.
+     */
+    before?: BeforeAction;
+
+    /**
+     * The key type or key generator for the locker. If lock is a string, it's expected one of 'guild', 'channel', or 'user'.
+     */
+    lock?: KeySupplier | 'guild' | 'channel' | 'user';
+}
+
+/**
  * @prop {Snowflake|Snowflake[]|IgnoreCheckPredicate} [ignoreCooldown] - ID of user(s) to ignore cooldown or a function to ignore.
  * @prop {Snowflake|Snowflake[]|IgnoreCheckPredicate} [ignorePermissions] - ID of user(s) to ignore `userPermissions` checks or a function to ignore.
  * @prop {DefaultArgumentOptions} [argumentDefaults] - The default argument options.

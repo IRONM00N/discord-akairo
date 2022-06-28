@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command, Flag } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command, Flag } from '../../src';
 
-class FCommand extends Command {
+export default class FCommand extends Command {
     constructor() {
         super('f', {
             aliases: ['f'],
@@ -30,5 +30,3 @@ class FCommand extends Command {
         message.channel.send(util.inspect(args, { depth: 1 }), { code: 'js' });
     }
 }
-
-module.exports = FCommand;

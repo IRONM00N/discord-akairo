@@ -1,52 +1,66 @@
+import Category from '../util/Category';
+import AkairoClient from './AkairoClient';
+import AkairoHandler from './AkairoHandler';
+
 /**
  * Base class for a module.
- * @param {string} id - ID of module.
- * @param {AkairoModuleOptions} [options={}] - Options.
  */
-class AkairoModule {
-    constructor(id, { category = 'default' } = {}) {
-        /**
-         * ID of the module.
-         * @type {string}
-         */
+export default abstract class AkairoModule {
+    /**
+     * ID of the module.
+     * @type {string}
+     */
+    public id: string
+
+    /**
+     * ID of the category this belongs to.
+     * @type {string}
+     */
+    public categoryID: string;
+
+    /**
+     * Category this belongs to.
+     * @type {Category}
+     */
+    public category: Category<string, AkairoModule>;
+
+    /**
+     * The filepath.
+     * @type {string}
+     */
+    public filepath: string;
+
+    /**
+     * The Akairo client.
+     * @type {AkairoClient}
+     */
+    public client: AkairoClient;
+
+    /**
+     * The handler.
+     * @type {AkairoHandler}
+     */
+    public handler: AkairoHandler;
+
+    /**
+     * @param {string} id - ID of module.
+     * @param {AkairoModuleOptions} [options={}] - Options.
+     */
+    public constructor(id: string, options: AkairoModuleOptions = {}) {
+        const { category = 'default' } = options;
         this.id = id;
-
-        /**
-         * ID of the category this belongs to.
-         * @type {string}
-         */
         this.categoryID = category;
-
-        /**
-         * Category this belongs to.
-         * @type {Category}
-         */
-        this.category = null;
-
-        /**
-         * The filepath.
-         * @type {string}
-         */
-        this.filepath = null;
-
-        /**
-         * The Akairo client.
-         * @type {AkairoClient}
-         */
-        this.client = null;
-
-        /**
-         * The handler.
-         * @type {AkairoHandler}
-         */
-        this.handler = null;
+        this.category = null!;
+        this.filepath = null!;
+        this.client = null!;
+        this.handler = null!;
     }
 
     /**
      * Reloads the module.
      * @returns {AkairoModule}
      */
-    reload() {
+    public reload(): this {
         return this.handler.reload(this.id);
     }
 
@@ -54,7 +68,7 @@ class AkairoModule {
      * Removes the module.
      * @returns {AkairoModule}
      */
-    remove() {
+    public remove(): this {
         return this.handler.remove(this.id);
     }
 
@@ -62,15 +76,19 @@ class AkairoModule {
      * Returns the ID.
      * @returns {string}
      */
-    toString() {
+    public toString(): string {
         return this.id;
     }
 }
 
-module.exports = AkairoModule;
 
 /**
- * Options for module.
- * @typedef {Object} AkairoModuleOptions
- * @prop {string} [category='default'] - Category ID for organization purposes.
+ * Options for module
  */
+export interface AkairoModuleOptions {
+	/**
+	 * Category ID for organization purposes.
+	 * @default "default"
+	 */
+	category?: string;
+};

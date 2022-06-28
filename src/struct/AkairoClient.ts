@@ -1,5 +1,5 @@
-const { Client } = require('discord.js');
-const ClientUtil = require('./ClientUtil');
+import { Client, type UserResolvable, type Snowflake, type ClientOptions } from 'discord.js';
+import ClientUtil from './ClientUtil';
 
 /**
  * The Akairo framework client.
@@ -8,8 +8,8 @@ const ClientUtil = require('./ClientUtil');
  * @param {ClientOptions} [clientOptions] - Options for Discord JS client.
  * If not specified, the previous options parameter is used instead.
  */
-class AkairoClient extends Client {
-    constructor(options = {}, clientOptions) {
+export default class AkairoClient extends Client {
+    constructor(options: AkairoOptions = {}, clientOptions: ClientOptions) {
         super(clientOptions || options);
 
         const { ownerID = '' } = options;
@@ -32,7 +32,7 @@ class AkairoClient extends Client {
      * @param {UserResolvable} user - User to check.
      * @returns {boolean}
      */
-    isOwner(user) {
+    public isOwner(user: UserResolvable): boolean {
         const id = this.users.resolveId(user);
         return Array.isArray(this.ownerID)
             ? this.ownerID.includes(id)
@@ -40,10 +40,13 @@ class AkairoClient extends Client {
     }
 }
 
-module.exports = AkairoClient;
-
 /**
  * Options for the client.
- * @typedef {Object} AkairoOptions
- * @prop {Snowflake|Snowflake[]} [ownerID=''] - Discord ID of the client owner(s).
  */
+export interface AkairoOptions {
+    /**
+     * Discord ID of the client owner(s)
+     * @default ''
+     */
+    ownerID?: Snowflake | Snowflake[];
+}

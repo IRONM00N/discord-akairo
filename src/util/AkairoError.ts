@@ -25,8 +25,10 @@ const Messages = {
  * @param {...any} args - Arguments.
  * @extends {Error}
  */
-class AkairoError extends Error {
-    constructor(key, ...args) {
+export default class AkairoError extends Error {
+    public code: string;
+
+    public constructor(key: keyof typeof Messages, ...args) {
         if (Messages[key] == null) throw new TypeError(`Error key '${key}' does not exist`);
         const message = typeof Messages[key] === 'function'
             ? Messages[key](...args)
@@ -36,9 +38,7 @@ class AkairoError extends Error {
         this.code = key;
     }
 
-    get name() {
+    public get name() {
         return `AkairoError [${this.code}]`;
     }
 }
-
-module.exports = AkairoError;

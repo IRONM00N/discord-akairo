@@ -1,18 +1,24 @@
-const Provider = require('./Provider');
+import Provider from './Provider';
+// @ts-ignore
+import type { Model } from 'mongoose'
 
 /**
  * Provider using the `Mongoose` library.
- * @param {Model} model - A Mongoose model.
  * @extends {Provider}
  */
-class MongooseProvider extends Provider {
-    constructor(model) {
-        super();
+export default class MongooseProvider extends Provider {
+    /**
+     * Mongoose model.
+     * @type {Model}
+     */
+    public model: Model<any>;
 
-        /**
-         * Mongoose model.
-         * @type {Model}
-         */
+    /**
+     * @param {Model} model - A Mongoose model.
+     */
+    public constructor(model: Model<any>) {
+        super();
+        
         this.model = model;
     }
 
@@ -20,7 +26,7 @@ class MongooseProvider extends Provider {
      * Initializes the provider.
      * @returns {Promise<void>}
      */
-    async init() {
+    public async init(): Promise<void> {
         const guilds = await this.model.find();
         for (const i in guilds) {
             const guild = guilds[i];
@@ -35,7 +41,7 @@ class MongooseProvider extends Provider {
      * @param {any} [defaultValue] - Default value if not found or null.
      * @returns {any}
      */
-    get(id, key, defaultValue) {
+    public get(id: string, key: string, defaultValue: any): any {
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
             return value == null ? defaultValue : value;
@@ -51,7 +57,7 @@ class MongooseProvider extends Provider {
      * @param {any} value - The value.
      * @returns {Promise<any>} - Mongoose query object|document
      */
-    async set(id, key, value) {
+    public async set(id: string, key: string, value: any): Promise<any> {
         const data = this.items.get(id) || {};
         data[key] = value;
         this.items.set(id, data);
@@ -68,7 +74,7 @@ class MongooseProvider extends Provider {
      * @param {string} key - The key to delete.
      * @returns {Promise<any>} - Mongoose query object|document
      */
-    async delete(id, key) {
+    public async delete(id: string, key: string): Promise<any> {
         const data = this.items.get(id) || {};
         delete data[key];
 
@@ -83,7 +89,7 @@ class MongooseProvider extends Provider {
      * @param {string} id - GuildID.
      * @returns {Promise<void>}
      */
-    async clear(id) {
+    public async clear(id: string): Promise<void> {
         this.items.delete(id);
         const doc = await this.getDocument(id);
         if (doc) await doc.remove();
@@ -94,7 +100,7 @@ class MongooseProvider extends Provider {
      * @param {string} id - guildID.
      * @returns {Promise<any>} - Mongoose query object|document
      */
-    async getDocument(id) {
+    public async getDocument(id: string): Promise<any> {
         const obj = await this.model.findOne({ id });
         if (!obj) {
             // eslint-disable-next-line new-cap
@@ -105,5 +111,3 @@ class MongooseProvider extends Provider {
         return obj;
     }
 }
-
-module.exports = MongooseProvider;

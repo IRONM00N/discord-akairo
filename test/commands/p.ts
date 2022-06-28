@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class PCommand extends Command {
+export default class PCommand extends Command {
     constructor() {
         super('p', {
             aliases: ['p'],
@@ -33,4 +33,3 @@ class PCommand extends Command {
     }
 }
 
-module.exports = PCommand;

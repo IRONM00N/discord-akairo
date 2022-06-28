@@ -1,7 +1,7 @@
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class EvalCommand extends Command {
+export default class EvalCommand extends Command {
     constructor() {
         super('eval', {
             aliases: ['eval', 'e'],
@@ -102,5 +102,3 @@ class EvalCommand extends Command {
         }
     }
 }
-
-module.exports = EvalCommand;

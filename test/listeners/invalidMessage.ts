@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
-const { Listener } = require('../../src');
+import { Listener } from '../../src';
 
-class InvalidMessageListener extends Listener {
+export default class InvalidMessageListener extends Listener {
     constructor() {
         super('messageInvalid', {
             emitter: 'commandHandler',
@@ -15,5 +15,3 @@ class InvalidMessageListener extends Listener {
         console.log(msg.util.parsed);
     }
 }
-
-module.exports = InvalidMessageListener;

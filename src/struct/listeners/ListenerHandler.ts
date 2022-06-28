@@ -1,8 +1,8 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoHandler = require('../AkairoHandler');
-const { Collection } = require('discord.js');
-const { isEventEmitter } = require('../../util/Util');
-const Listener = require('./Listener');
+import AkairoError from '../../util/AkairoError';
+import AkairoHandler from '../AkairoHandler';
+import { Collection } from 'discord.js';
+import { isEventEmitter } from '../../util/Util';
+import Listener from './Listener';
 
 /**
  * Loads listeners and registers them with EventEmitters.
@@ -10,7 +10,7 @@ const Listener = require('./Listener');
  * @param {AkairoHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class ListenerHandler extends AkairoHandler {
+export default class ListenerHandler extends AkairoHandler {
     constructor(client, {
         directory,
         classToHandle = Listener,
@@ -174,8 +174,6 @@ class ListenerHandler extends AkairoHandler {
      * @returns {ListenerHandler}
      */
 }
-
-module.exports = ListenerHandler;
 
 /**
  * Emitted when a listener is loaded.

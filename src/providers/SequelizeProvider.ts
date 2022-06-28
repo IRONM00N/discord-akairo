@@ -1,39 +1,48 @@
-const Provider = require('./Provider');
+import Provider, { ProviderOptions } from './Provider';
+// @ts-ignore
+import type { Model, ModelStatic } from 'sequelize';
 
 /**
  * Provider using the `sequelize` library.
- * @param {Model} table - A Sequelize model.
- * @param {ProviderOptions} [options={}] - Options to use.
  * @extends {Provider}
  */
-class SequelizeProvider extends Provider {
-    constructor(table, { idColumn = 'id', dataColumn } = {}) {
+export default class SequelizeProvider extends Provider {
+    /**
+     * Sequelize model.
+     * @type {Model}
+     */
+    public table: ModelStatic<Model>;
+
+    /**
+     * Column for ID.
+     * @type {string}
+     */
+    public idColumn: string;
+
+    /**
+     * Column for JSON data.
+     * @type {?string}
+     */
+    public dataColumn?: string;
+
+    /**
+     * @param {ModelStatic<Model>} table - A Sequelize model.
+     * @param {ProviderOptions} [options={}] - Options to use.     
+     */
+    public constructor(table: ModelStatic<Model>, options: ProviderOptions = {}) {
+        const { idColumn = 'id', dataColumn } = options;
         super();
 
-        /**
-         * Sequelize model.
-         * @type {Model}
-         */
         this.table = table;
-
-        /**
-         * Column for ID.
-         * @type {string}
-         */
         this.idColumn = idColumn;
-
-        /**
-         * Column for JSON data.
-         * @type {?string}
-         */
         this.dataColumn = dataColumn;
     }
 
     /**
      * Initializes the provider.
-     * @returns {Bluebird<void>}
+     * @returns {Promise<void>}
      */
-    async init() {
+    public async init(): Promise<void> {
         const rows = await this.table.findAll();
         for (const row of rows) {
             this.items.set(row[this.idColumn], this.dataColumn ? row[this.dataColumn] : row);
@@ -47,7 +56,7 @@ class SequelizeProvider extends Provider {
      * @param {any} [defaultValue] - Default value if not found or null.
      * @returns {any}
      */
-    get(id, key, defaultValue) {
+    public get(id: string, key: string, defaultValue: any): any {
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
             return value == null ? defaultValue : value;
@@ -61,9 +70,9 @@ class SequelizeProvider extends Provider {
      * @param {string} id - ID of entry.
      * @param {string} key - The key to set.
      * @param {any} value - The value.
-     * @returns {Bluebird<boolean>}
+     * @returns {Promise<[Model, boolean | null]>}
      */
-    set(id, key, value) {
+    public set(id: string, key: string, value: any): Promise<[Model, boolean | null]> {
         const data = this.items.get(id) || {};
         data[key] = value;
         this.items.set(id, data);
@@ -85,9 +94,9 @@ class SequelizeProvider extends Provider {
      * Deletes a value.
      * @param {string} id - ID of entry.
      * @param {string} key - The key to delete.
-     * @returns {Bluebird<boolean>}
+     * @returns {Promise<[Model, boolean | null]>}
      */
-    delete(id, key) {
+    public delete(id: string, key: string): Promise<[Model, boolean | null]> {
         const data = this.items.get(id) || {};
         delete data[key];
 
@@ -107,12 +116,10 @@ class SequelizeProvider extends Provider {
     /**
      * Clears an entry.
      * @param {string} id - ID of entry.
-     * @returns {Bluebird<void>}
+     * @returns {Promise<number>}
      */
-    clear(id) {
+    public clear(id: string): Promise<number> {
         this.items.delete(id);
         return this.table.destroy({ where: { [this.idColumn]: id } });
     }
 }
-
-module.exports = SequelizeProvider;

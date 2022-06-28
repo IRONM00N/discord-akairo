@@ -1,13 +1,13 @@
-const { ArgumentTypes } = require('../../../util/Constants');
-const { Collection } = require('discord.js');
-const { URL } = require('url');
+export { ArgumentTypes } from '../../../util/Constants';
+export { Collection } from 'discord.js';
+export { URL } from 'url';
 
 /**
  * Type resolver for command arguments.
  * The types are documented under ArgumentType.
  * @param {CommandHandler} handler - The command handler.
  */
-class TypeResolver {
+export default class TypeResolver {
     constructor(handler) {
         /**
          * The Akairo client.
@@ -458,5 +458,3 @@ class TypeResolver {
         return this;
     }
 }
-
-module.exports = TypeResolver;

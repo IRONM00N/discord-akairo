@@ -1,5 +1,5 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoModule = require('../AkairoModule');
+import { patchAbstract } from '../../util/Util';
+import AkairoModule from '../AkairoModule';
 
 /**
  * Represents an inhibitor.
@@ -7,7 +7,7 @@ const AkairoModule = require('../AkairoModule');
  * @param {InhibitorOptions} [options={}] - Options for the inhibitor.
  * @extends {AkairoModule}
  */
-class Inhibitor extends AkairoModule {
+export default abstract class Inhibitor extends AkairoModule {
     constructor(id, {
         category,
         reason = '',
@@ -56,9 +56,7 @@ class Inhibitor extends AkairoModule {
      * @param {Command} [command] - Command to check.
      * @returns {boolean|Promise<boolean>}
      */
-    exec() {
-        throw new AkairoError('NOT_IMPLEMENTED', this.constructor.name, 'exec');
-    }
+    abstract exec(message: Message, command?: Command): boolean | Promise<boolean>;
 
     /**
      * Reloads the inhibitor.
@@ -75,12 +73,12 @@ class Inhibitor extends AkairoModule {
      */
 }
 
-module.exports = Inhibitor;
+patchAbstract(Inhibitor, 'exec');
 
 /**
  * Options to use for inhibitor execution behavior.
  * Also includes properties from AkairoModuleOptions.
- * @typedef {AkairoModuleOptions}  InhibitorOptions
+ * @typedef {AkairoModuleOptions} InhibitorOptions
  * @prop {string} [reason=''] - Reason emitted when command or message is blocked.
  * @prop {string} [type='post'] - Can be 'all' to run on all messages, 'pre' to run on messages not blocked by the built-in inhibitors, or 'post' to run on messages that are commands.
  * @prop {number} [priority=0] - Priority for the inhibitor for when more than one inhibitors block a message.

@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class ArgsCommand extends Command {
+export default class ArgsCommand extends Command {
     constructor() {
         super('args', {
             aliases: ['args'],
@@ -51,5 +51,3 @@ class ArgsCommand extends Command {
         message.channel.send(util.inspect(args, { depth: 1 }), { code: 'js' });
     }
 }
-
-module.exports = ArgsCommand;

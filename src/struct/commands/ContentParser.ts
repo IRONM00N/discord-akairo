@@ -1,4 +1,4 @@
-const { ArgumentMatches } = require('../../util/Constants');
+import { ArgumentMatches } from '../../util/Constants';
 
 /*
  * Grammar:
@@ -47,8 +47,8 @@ const { ArgumentMatches } = require('../../util/Constants');
  *
  * FlagWord = Given
  * OptionFlagWord = Given
- * Seperator = Given
- * Word = /^\S+/ (and not in FlagWord or OptionFlagWord or equal to Seperator)
+ * Separator = Given
+ * Word = /^\S+/ (and not in FlagWord or OptionFlagWord or equal to Separator)
  * WS = /^\s+/
  * EOF = /^$/
  */
@@ -425,7 +425,7 @@ class Parser {
  * @param {ContentParserOptions} options - Options.
  * @private
  */
-class ContentParser {
+export default class ContentParser {
     constructor({
         flagWords = [],
         optionFlagWords = [],
@@ -483,8 +483,6 @@ class ContentParser {
         return res;
     }
 }
-
-module.exports = ContentParser;
 
 /**
  * Options for the content parser.

@@ -5,3 +5,11 @@ node_modules
 
 test/auth.json
 test/db.sqlite
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

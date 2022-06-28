@@ -1,11 +1,11 @@
-const { Collection } = require('discord.js');
+import { Collection } from 'discord.js';
 
 /**
  * Command utilities.
  * @param {CommandHandler} handler - The command handler.
  * @param {Message} message - Message that triggered the command.
  */
-class CommandUtil {
+export default class CommandUtil {
     constructor(handler, message) {
         /**
          * The command handler.
@@ -155,8 +155,6 @@ class CommandUtil {
         return transformedOptions;
     }
 }
-
-module.exports = CommandUtil;
 
 /**
  * Extra properties applied to the Discord.js message object.

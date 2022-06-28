@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-const { Command } = require('../../src');
-const util = require('util');
+import util from 'util';
+import { Command } from '../../src';
 
-class UnorderedCommand extends Command {
+export default class UnorderedCommand extends Command {
     constructor() {
         super('unordered', {
             aliases: ['unordered', 'un'],

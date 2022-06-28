@@ -1,12 +1,12 @@
-const AkairoError = require('../../util/AkairoError');
-const AkairoHandler = require('../AkairoHandler');
-const { BuiltInReasons, CommandHandlerEvents } = require('../../util/Constants');
-const { Collection } = require('discord.js');
-const Command = require('./Command');
-const CommandUtil = require('./CommandUtil');
-const Flag = require('./Flag');
-const { deepAssign, flatMap, intoArray, intoCallable, isPromise, prefixCompare } = require('../../util/Util');
-const TypeResolver = require('./arguments/TypeResolver');
+import AkairoError from '../../util/AkairoError';
+import AkairoHandler from '../AkairoHandler';
+import { BuiltInReasons, CommandHandlerEvents } from '../../util/Constants';
+import { Collection } from 'discord.js';
+import Command from './Command';
+import CommandUtil from './CommandUtil';
+import Flag from './Flag';
+import { deepAssign, flatMap, intoArray, intoCallable, isPromise, prefixCompare } from '../../util/Util';
+import TypeResolver from './arguments/TypeResolver';
 
 /**
  * Loads commands and handles messages.
@@ -14,7 +14,7 @@ const TypeResolver = require('./arguments/TypeResolver');
  * @param {CommandHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class CommandHandler extends AkairoHandler {
+export default class CommandHandler extends AkairoHandler {
     constructor(client, {
         directory,
         classToHandle = Command,
@@ -1017,8 +1017,6 @@ class CommandHandler extends AkairoHandler {
      * @returns {CommandHandler}
      */
 }
-
-module.exports = CommandHandler;
 
 /**
  * Emitted when a message is blocked by a pre-message inhibitor.
